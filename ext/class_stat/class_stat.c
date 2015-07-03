@@ -1,5 +1,6 @@
 
 #include <ruby/ruby.h>
+#include <ruby/version.h>
 
 void rb_objspace_each_objects(
     int (*callback)(void *start, void *end, size_t stride, void *data),
@@ -26,9 +27,6 @@ countup(VALUE h, VALUE k, int n)
     rb_hash_aset(h, k, cn);
 }
 
-static int
-msize(VALUE klass)
-{
 #if RUBY_API_VERSION_MAJOR == 2 && (RUBY_API_VERSION_MINOR == 2 || RUBY_API_VERSION_MINOR == 1)
 struct method_table_wrapper {
     st_table *tbl;
@@ -40,6 +38,9 @@ struct method_table_wrapper {
 #define RCLASS_M_TBL(c) (RCLASS(c)->m_tbl)
 #endif
 
+static int
+msize(VALUE klass)
+{
     if (RCLASS_M_TBL(klass)) {
 	return RCLASS_M_TBL(klass)->num_entries;
     }
