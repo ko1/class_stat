@@ -29,8 +29,19 @@ countup(VALUE h, VALUE k, int n)
 static int
 msize(VALUE klass)
 {
-    if (RCLASS(klass)->m_tbl) {
-	return RCLASS(klass)->m_tbl->num_entries;
+#if RUBY_API_VERSION_MAJOR == 2 && (RUBY_API_VERSION_MINOR == 2 || RUBY_API_VERSION_MINOR == 1)
+struct method_table_wrapper {
+    st_table *tbl;
+    size_t serial;
+};
+#define RCLASS_M_TBL_WRAPPER(c) (RCLASS(c)->m_tbl_wrapper)
+#define RCLASS_M_TBL(c) (RCLASS_M_TBL_WRAPPER(c) ? RCLASS_M_TBL_WRAPPER(c)->tbl : 0)
+#else
+#define RCLASS_M_TBL(c) (RCLASS(c)->m_tbl)
+#endif
+
+    if (RCLASS_M_TBL(klass)) {
+	return RCLASS_M_TBL(klass)->num_entries;
     }
     else {
 	return 0;
