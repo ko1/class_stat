@@ -16,3 +16,6 @@ end
 task :run => 'compile' do
   ruby %q{-I ./lib test.rb}
 end
+
+task default: :test
+
